@@ -1,101 +1,114 @@
+"use client";
+
 import Image from "next/image";
+import { useState, useEffect, useCallback } from "react";
+import { Copy } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const { toast } = useToast();
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [imageApiUrl, setImageApiUrl] = useState<string | null>(null);
+  const customLoader = ({ src }: { src: string }) => src;
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+  // Fetch random image from API
+  const fetchRandomImage = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch("/api/random-image");
+      if (!response.ok) throw new Error("Failed to fetch image");
+
+      const data = await response.json();
+      setImageUrl(data.url);
+    } catch (error) {
+      const err = error as Error;
+      toast({
+        title: "Error",
+        description: `Failed to fetch image: ${err.message}`,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }, [toast]);
+
+  // Set API URL and fetch the initial random image
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setImageApiUrl(`${window.location.origin}/api/random-image`);
+    }
+    fetchRandomImage();
+  }, [fetchRandomImage]);
+
+  // Copy API URL to clipboard
+  const copyToClipboard = async () => {
+    try {
+      if (imageApiUrl) {
+        await navigator.clipboard.writeText(imageApiUrl);
+        toast({
+          title: "Success",
+          description: "URL copied to clipboard!",
+        });
+      }
+    } catch (error) {
+      const err = error as Error;
+      toast({
+        title: "Failed to copy URL",
+        description: `An unexpected error occurred: ${err.message}`,
+      });
+    }
+  };
+
+  return (
+    <div className="flex flex-grow justify-center items-center">
+      <Card className="w-[350px]">
+        <CardHeader>
+          <CardTitle>Preview Placeholder Image</CardTitle>
+          <CardDescription>Instantly generate random placeholder images for your projects</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-row gap-1">
+              <Input value={imageApiUrl || ""} readOnly />
+              <Button variant="outline" size="icon" onClick={copyToClipboard}>
+                <Copy className="h-[1.2rem] w-[1.2rem]" />
+              </Button>
+            </div>
+
+            <div className="w-full flex justify-center mt-6">
+              {isLoading ? (
+                <AspectRatio ratio={1 / 1} className="w-[300px] h-[300px]">
+                  <Skeleton className="w-full h-full rounded-lg" />
+                </AspectRatio>
+              ) : (
+                imageUrl && (
+                  <AspectRatio ratio={1 / 1} className="w-[300px] h-[300px]">
+                    <Image
+                      loader={customLoader}
+                      src={imageUrl}
+                      alt="Random Placeholder"
+                      width={300}
+                      height={300}
+                      className="object-cover rounded-lg w-[300px] h-[300px]"
+                      unoptimized
+                    />
+                  </AspectRatio>
+                )
+              )}
+            </div>
+          </div>
+        </CardContent>
+        <CardFooter className="flex flex-col justify-between gap-3">
+          <Button className="w-full" onClick={fetchRandomImage}>
+            Shuffle
+          </Button>
+        </CardFooter>
+      </Card>
     </div>
   );
 }
