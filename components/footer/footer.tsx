@@ -75,7 +75,7 @@ export default function Footer() {
         </div>
 
         <div>
-          <Link href="https://github.com/zhenfon/random-placeholder" target="_blank">
+          <Link href="https://github.com/zhenfon/random-placeholder-v2" target="_blank">
             <Button className="" variant="ghost" size="icon">
               <Github className="h-[1.2rem] w-[1.2rem]" />
             </Button>
