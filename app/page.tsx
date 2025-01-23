@@ -24,8 +24,8 @@ export default function Home() {
       const response = await fetch("/api/random-image");
       if (!response.ok) throw new Error("Failed to fetch image");
 
-      const data = await response.json();
-      setImageUrl(data.url);
+      const data = await response.text();
+      setImageUrl(data);
     } catch (error) {
       const err = error as Error;
       toast({
