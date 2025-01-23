@@ -116,10 +116,6 @@ Contributions are welcome! If you have suggestions, feature requests, or bug rep
    ```
 5. Open a pull request.
 
-## License
-
-This project is licensed under the [MIT License](LICENSE).
-
 ## Acknowledgments
 
 - [Next.js Documentation](https://nextjs.org/docs)
