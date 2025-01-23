@@ -27,8 +27,10 @@ export async function GET(req: Request) {
         // Construct the full URL to the image
         const imageUrl = `${protocol}://${host}/images/${randomImage}`;
 
-        // Return the image URL as a JSON response
-        return NextResponse.json({ url: imageUrl });
+        // Return the image URL as a plain text response
+        return new Response(imageUrl, {
+            headers: { 'Content-Type': 'text/plain' },
+        });
     } catch (error) {
         console.error('Error fetching images:', error);
         return NextResponse.json({ error: 'Failed to fetch images' }, { status: 500 });
