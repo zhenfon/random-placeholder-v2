@@ -27,9 +27,14 @@ export async function GET(req: Request) {
         // Construct the full URL to the image
         const imageUrl = `${protocol}://${host}/images/${randomImage}`;
 
-        // Return the image URL as a plain text response
+        // Return the image URL as a plain text response with CORS headers
         return new Response(imageUrl, {
-            headers: { 'Content-Type': 'text/plain' },
+            headers: {
+                'Content-Type': 'text/plain',
+                'Access-Control-Allow-Origin': '*', // Allow all origins
+                'Access-Control-Allow-Methods': 'GET', // Allow only GET requests
+                'Access-Control-Allow-Headers': 'Content-Type', // Allow specific headers
+            },
         });
     } catch (error) {
         console.error('Error fetching images:', error);
