@@ -15,8 +15,6 @@ export default function Home() {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [imageApiUrl, setImageApiUrl] = useState<string | null>(null);
-  const customLoader = ({ src }: { src: string }) => src;
-
   // Fetch random image from API
   const fetchRandomImage = useCallback(async () => {
     setIsLoading(true);
@@ -89,13 +87,11 @@ export default function Home() {
                 imageUrl && (
                   <AspectRatio ratio={1 / 1} className="w-[300px] h-[300px]">
                     <Image
-                      loader={customLoader}
                       src={imageUrl}
                       alt="Random Placeholder"
                       width={300}
                       height={300}
                       className="object-cover rounded-lg w-[300px] h-[300px]"
-                      unoptimized
                     />
                   </AspectRatio>
                 )

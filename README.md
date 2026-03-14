@@ -1,77 +1,118 @@
 # Random Placeholder V2
 
-Random Placeholder V2 is an open-source Next.js project that generates random placeholder images from a local collection. This project is designed for developers who need random placeholder images for testing or prototyping their web applications.
+An open-source API that serves random placeholder images. Built with Next.js and deployed on Vercel's Edge Runtime for minimal latency.
+
+**Live demo:** [random-placeholder-v2.vercel.app](https://random-placeholder-v2.vercel.app/)
 
 ## Features
 
-- **Random Image API**: An API endpoint (`/api/random-image`) that returns the URL of a randomly selected image.
-- **Interactive Frontend**: A simple interface to preview, copy, and shuffle placeholder images.
-- **Optimized for Developers**: Easy to use and extend.
-- **Lightweight**: Uses local images stored in the `public/images` directory.
+- **Single image endpoint** — returns one random image URL as plain text
+- **Batch endpoint** — returns multiple unique image URLs in a single request
+- **Edge Runtime** — low-latency responses globally via Vercel's Edge Network
+- **Rate limiting** — IP-based throttling for public consumers, with API key bypass for trusted integrations
+- **CORS enabled** — usable from any origin
+
+## API Reference
+
+### `GET /api/random-image`
+
+Returns the URL of a randomly selected image as plain text.
+
+**Response:**
+
+```
+https://random-placeholder-v2.vercel.app/images/frieren.webp
+```
+
+**Headers:**
+
+| Header | Value |
+|--------|-------|
+| `Content-Type` | `text/plain` |
+| `Cache-Control` | `no-store` |
+
+### `GET /api/random-images?count={n}`
+
+Returns an array of unique random image URLs as JSON.
+
+**Parameters:**
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `count` | number | `6` | Number of unique images to return (max: pool size) |
+
+**Response:**
+
+```json
+{
+  "urls": [
+    "https://random-placeholder-v2.vercel.app/images/frieren.webp",
+    "https://random-placeholder-v2.vercel.app/images/makima.webp",
+    "https://random-placeholder-v2.vercel.app/images/lucy.webp"
+  ]
+}
+```
+
+### Rate Limiting
+
+Public requests are limited to **30 requests per minute** per IP address. Exceeding the limit returns a `429` response with a `Retry-After` header.
+
+To bypass rate limiting, include a valid API key in the request header:
+
+```
+X-API-Key: your-api-key
+```
+
+The key is validated against the `API_SECRET_KEY` environment variable on the server.
 
 ## Tech Stack
 
-- **Framework**: [Next.js](https://nextjs.org/)
-- **UI Components**: Built with [ShadCN UI](https://shadcn.dev/).
-- **Icons**: [Lucide React](https://lucide.dev/) for lightweight and customizable icons.
-- **React Version**: React 18+
-- **Deployment**: Optimized for [Vercel](https://vercel.com/).
+- **Framework:** [Next.js 16](https://nextjs.org/) (App Router, Edge Runtime)
+- **UI Components:** [shadcn/ui](https://ui.shadcn.com/)
+- **Icons:** [Lucide React](https://lucide.dev/)
+- **Language:** TypeScript
+- **Deployment:** [Vercel](https://vercel.com/)
 
-## Installation
+## Getting Started
 
-1. **Clone the Repository**:
-   ```bash
-   git clone https://github.com/your-username/random-placeholder-v2.git
-   cd random-placeholder-v2
-   ```
+### Prerequisites
 
-2. **Install Dependencies**:
-   ```bash
-   npm install
-   ```
+- Node.js 18+
+- npm
 
-3. **Add Your Images**:
-   Place your images in the `public/images` directory. Supported formats include `.jpg`, `.jpeg`, `.png`, `.gif`, and `.webp`.
+### Installation
 
-4. **Run the Development Server**:
-   ```bash
-   npm run dev
-   ```
+```bash
+git clone https://github.com/zhenfon/random-placeholder-v2.git
+cd random-placeholder-v2
+npm install
+```
 
-5. Open [http://localhost:3000](http://localhost:3000) in your browser.
+### Environment Variables
 
-## API Usage
+Copy the example file and fill in the values:
 
-### Endpoint
+```bash
+cp .env.example .env.local
+```
 
-`GET /api/random-image`
+| Variable | Description | Required |
+|----------|-------------|----------|
+| `API_SECRET_KEY` | Shared secret for API key authentication. Requests with a matching `X-API-Key` header bypass rate limiting. | No |
 
-### Response
+### Development
 
-- **Success**:
-  ```json
-  {
-    "url": "https://your-domain.com/images/example.jpg"
-  }
-  ```
+```bash
+npm run dev
+```
 
-- **Error**:
-  ```json
-  {
-    "error": "No images found"
-  }
-  ```
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-## How It Works
+### Adding Images
 
-1. **Image Storage**:
-   - Images are stored in the `public/images` directory.
+Place image files in the `public/images/` directory. Supported formats: `.jpg`, `.jpeg`, `.png`, `.gif`, `.webp`.
 
-2. **Random Image Selection**:
-   - The API reads all files in the `public/images` directory, filters for valid image extensions, and selects one at random.
-
-3. **Frontend Integration**:
-   - The API is called on the frontend to fetch and display the random image.
+After adding or removing images, update the `IMAGES` array in `app/api/_shared.ts` to match.
 
 ## Project Structure
 
@@ -79,50 +120,28 @@ Random Placeholder V2 is an open-source Next.js project that generates random pl
 random-placeholder-v2/
 ├── app/
 │   ├── api/
-│   │   └── random-image/
-│   │       └── route.ts   # API to fetch a random image
-│   └── page.tsx          # Frontend interface
+│   │   ├── _shared.ts              # Shared logic (image list, rate limiting, CORS)
+│   │   ├── random-image/route.ts   # Single image endpoint
+│   │   └── random-images/route.ts  # Batch endpoint
+│   ├── layout.tsx
+│   └── page.tsx                    # Interactive demo page
+├── components/                     # UI components
 ├── public/
-│   └── images/           # Directory to store placeholder images
-├── components/           # Reusable UI components
-├── hooks/                # Custom React hooks
-├── styles/               # Global styles
-├── next.config.js        # Next.js configuration
-└── package.json          # Project dependencies
+│   └── images/                     # Image pool
+├── next.config.ts
+└── package.json
 ```
 
-## Demo
+## Contributing
 
-Check out the live demo on [Vercel](https://random-placeholder-v2.vercel.app/).
+Contributions are welcome. Please open an issue to discuss proposed changes before submitting a pull request.
 
-## Contribution
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/your-feature`)
+3. Commit your changes (`git commit -m "Add your feature"`)
+4. Push to the branch (`git push origin feature/your-feature`)
+5. Open a pull request
 
-Contributions are welcome! If you have suggestions, feature requests, or bug reports, please open an issue or submit a pull request.
+## License
 
-### Steps to Contribute
-
-1. Fork the repository.
-2. Create a new branch.
-   ```bash
-   git checkout -b feature/your-feature
-   ```
-3. Commit your changes.
-   ```bash
-   git commit -m "Add your feature"
-   ```
-4. Push to the branch.
-   ```bash
-   git push origin feature/your-feature
-   ```
-5. Open a pull request.
-
-## Acknowledgments
-
-- [Next.js Documentation](https://nextjs.org/docs)
-- [ShadCN UI](https://shadcn.dev/)
-- [Lucide React](https://lucide.dev/)
-
----
-
-Enjoy using Random Placeholder V2! If you find this project helpful, please give it a ⭐ on GitHub!
-
+This project is licensed under the [GNU General Public License v3.0](LICENSE).
