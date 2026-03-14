@@ -69,7 +69,7 @@ The key is validated against the `API_SECRET_KEY` environment variable on the se
 
 - **Framework:** [Next.js 16](https://nextjs.org/) (App Router, Edge Runtime)
 - **UI Components:** [shadcn/ui](https://ui.shadcn.com/)
-- **Icons:** [Lucide React](https://lucide.dev/)
+- **Icons:** [Tabler Icons](https://tabler.io/icons)
 - **Language:** TypeScript
 - **Deployment:** [Vercel](https://vercel.com/)
 
@@ -126,6 +126,8 @@ random-placeholder-v2/
 │   ├── layout.tsx
 │   └── page.tsx                    # Interactive demo page
 ├── components/                     # UI components
+├── lib/
+│   └── utils.ts                    # cn() utility
 ├── public/
 │   └── images/                     # Image pool
 ├── next.config.ts
