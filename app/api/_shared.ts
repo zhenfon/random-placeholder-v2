@@ -4,9 +4,11 @@ export const IMAGES = [
   'frieren.webp',
   'frieren2.webp',
   'hayasaka.webp',
+  'himeno.webp',
   'lucy.webp',
   'mai.webp',
   'makima.webp',
+  'maomao.webp',
   'ubel.webp',
 ] as const
 

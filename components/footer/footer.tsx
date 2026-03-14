@@ -1,35 +1,31 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Github } from "lucide-react";
+import { IconBrandGithub } from "@tabler/icons-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 
 export default function Footer() {
-  const [isFooterVisible, setIsFooterVisible] = useState<boolean>(true); // Add type to the state
-  const [lastScrollY, setLastScrollY] = useState<number>(0); // Add type to the scroll position
+  const [isFooterVisible, setIsFooterVisible] = useState<boolean>(true);
+  const [lastScrollY, setLastScrollY] = useState<number>(0);
 
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-      const maxScrollY = document.documentElement.scrollHeight - window.innerHeight; // Maximum scrollable height
+      const maxScrollY = document.documentElement.scrollHeight - window.innerHeight;
 
-      // Ignore overscroll (bounce back) on mobile when scroll position is outside the valid range
       if (currentScrollY < 0 || currentScrollY > maxScrollY) {
         return;
       }
 
       if (currentScrollY - lastScrollY > 3) {
-        // Scrolled down by at least 3px
         setIsFooterVisible(false);
       } else if (lastScrollY - currentScrollY > 3) {
-        // Scrolled up by at least 3px
         setIsFooterVisible(true);
       }
 
-      // Update the last scroll position
       setLastScrollY(currentScrollY);
     };
 
@@ -42,19 +38,21 @@ export default function Footer() {
 
   return (
     <div
-      className={`w-full bg-[hsl(var(--background))] fixed bottom-0 transition-opacity duration-300 ease-in-out ${
+      className={`w-full fixed bottom-0 transition-opacity duration-300 ease-in-out ${
         isFooterVisible ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
       }`}
     >
       <Separator />
-      <div className="px-3 py-1 flex justify-between items-center">
+      <div className="px-3 py-1 flex justify-between items-center bg-background">
         <div>
           <span className="text-sm font-medium">Built with</span>
           <HoverCard>
-            <HoverCardTrigger asChild>
-              <Button className="pl-1 text-sm font-medium" variant="link">
-                shadcn/ui
-              </Button>
+            <HoverCardTrigger
+              render={
+                <Button className="pl-1 text-sm font-medium" variant="link" />
+              }
+            >
+              shadcn/ui
             </HoverCardTrigger>
             <HoverCardContent>
               <div className="flex items-center justify-between gap-3">
@@ -76,8 +74,8 @@ export default function Footer() {
 
         <div>
           <Link href="https://github.com/zhenfon/random-placeholder-v2" target="_blank">
-            <Button className="" variant="ghost" size="icon">
-              <Github className="h-[1.2rem] w-[1.2rem]" />
+            <Button variant="ghost" size="icon">
+              <IconBrandGithub className="size-4" />
             </Button>
           </Link>
         </div>

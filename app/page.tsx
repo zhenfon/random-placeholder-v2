@@ -2,8 +2,8 @@
 
 import Image from "next/image";
 import { useState, useEffect, useCallback } from "react";
-import { Copy } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { IconCopy } from "@tabler/icons-react";
+import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
@@ -11,10 +11,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function Home() {
-  const { toast } = useToast();
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [imageApiUrl, setImageApiUrl] = useState<string | null>(null);
+
   // Fetch random image from API
   const fetchRandomImage = useCallback(async () => {
     setIsLoading(true);
@@ -26,14 +26,11 @@ export default function Home() {
       setImageUrl(data);
     } catch (error) {
       const err = error as Error;
-      toast({
-        title: "Error",
-        description: `Failed to fetch image: ${err.message}`,
-      });
+      toast.error(`Failed to fetch image: ${err.message}`);
     } finally {
       setIsLoading(false);
     }
-  }, [toast]);
+  }, []);
 
   // Set API URL and fetch the initial random image
   useEffect(() => {
@@ -48,17 +45,11 @@ export default function Home() {
     try {
       if (imageApiUrl) {
         await navigator.clipboard.writeText(imageApiUrl);
-        toast({
-          title: "Success",
-          description: "URL copied to clipboard!",
-        });
+        toast.success("URL copied to clipboard!");
       }
     } catch (error) {
       const err = error as Error;
-      toast({
-        title: "Failed to copy URL",
-        description: `An unexpected error occurred: ${err.message}`,
-      });
+      toast.error(`Failed to copy URL: ${err.message}`);
     }
   };
 
@@ -74,7 +65,7 @@ export default function Home() {
             <div className="flex flex-row gap-1">
               <Input value={imageApiUrl || ""} readOnly />
               <Button variant="outline" size="icon" onClick={copyToClipboard}>
-                <Copy className="h-[1.2rem] w-[1.2rem]" />
+                <IconCopy className="size-4" />
               </Button>
             </div>
 
